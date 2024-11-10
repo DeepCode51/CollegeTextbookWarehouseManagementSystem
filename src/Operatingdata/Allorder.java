@@ -1,0 +1,86 @@
+package Operatingdata;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+
+public class Allorder {
+    private String ISBN;
+    private String name;
+    private double price;
+    private int ordertotal;
+    private double totalprice;
+
+    @Override
+    public String toString() {
+        return "Allorder{" +
+                "ISBN='" + ISBN + '\'' +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", ordertotal=" + ordertotal +
+                ", totalprice=" + totalprice +
+                '}';
+    }
+
+    public String getISBN() {
+        return ISBN;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public int getOrdertotal() {
+        return ordertotal;
+    }
+
+    public double getTotalprice() {
+        return totalprice;
+    }
+
+
+    public Allorder(String ISBN, String name, double price, int ordertotal, double totalprice) {
+        this.ISBN = ISBN;
+        this.name = name;
+        this.price = price;
+        this.ordertotal = ordertotal;
+        this.totalprice = totalprice;
+    }
+
+    public static LinkedList<Allorder> getAllorder() {
+        //获取数据库连接
+        new Connect();
+        Connection conn = Connect.getCon();
+        LinkedList<Allorder> list = new LinkedList<>();
+        //通过Connection提供的createStatement()方法创建一个Statement对象，用于执行一个查询；
+        try  {
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM thebookprice");
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                Allorder allorder = new Allorder(result.getString(1),
+                        result.getString(2),
+                        result.getDouble(3),
+                        result.getInt(4),
+                        result.getDouble(5));
+                System.out.println(allorder);
+                list.add(allorder);
+            }
+            statement.close();
+            result.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Connect.closeCon(conn);
+        return list;
+    }
+
+    public static void main(String[] args) {
+        getAllorder();
+    }
+}
